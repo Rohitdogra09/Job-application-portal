@@ -1,5 +1,7 @@
 package com.rohit.jobportal.auth;
 
+import java.util.Optional;
+
 import com.rohit.jobportal.entity.*;
 import com.rohit.jobportal.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -43,9 +45,12 @@ public class AuthService {
         Instant expiry = now.plusSeconds(expMinutes * 60);
 
         // Roles → JWT scope
-        String scope = auth.getAuthorities().stream()
-                .map(a -> a.getAuthority())
-                .collect(Collectors.joining(" "));
+        // Take scope from DB (must contain: ROLE_RECRUITER FACTOR_PASSWORD)
+        User user = userRepository.findByEmail(req.email())
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + req.email()));
+
+        String scope = user.getScope();
+
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer(issuer)

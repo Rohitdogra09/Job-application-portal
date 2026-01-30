@@ -34,6 +34,9 @@ public class User {
     @Column(name="created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @Column(nullable = false)
+    private String scope;
+
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="user_roles",
