@@ -26,7 +26,7 @@ public class RecruiterJobController {
     //List of jobs created by this recruiter
     @PreAuthorize("hasAuthority('SCOPE_ROLE_RECRUITER')")
     @GetMapping
-    public List<Job> myJobs(@AuthenticationPrincipal Jwt jwt){
+    public List<JobResponse> myJobs(@AuthenticationPrincipal Jwt jwt){
         return recruiterJobService.getMyJobs(jwt);
     }
 }

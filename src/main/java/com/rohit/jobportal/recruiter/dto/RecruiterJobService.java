@@ -40,12 +40,27 @@ public class RecruiterJobService {
 
     // Get all the jobs created by logged in recruiter
 
-    public List<Job> getMyJobs(Jwt jwt){
-
+    public List<JobResponse> getMyJobs(Jwt jwt) {
         String email = jwt.getSubject();
 
         User recruiter = userRepository.findByEmail(email)
-                .orElseThrow(() -> new IllegalArgumentException("User not found" + email));
-        return jobRepository.findByCreatedBy_IdOrderByIdDesc(recruiter.getId());
+                .orElseThrow(() -> new IllegalArgumentException("User not found " + email));
+
+        return jobRepository.findByCreatedBy_IdOrderByIdDesc(recruiter.getId())
+                .stream()
+                .map(job -> new JobResponse(
+                        job.getId(),
+                        job.getTitle(),
+                        job.getDescription(),
+                        job.getLocation(),
+                        job.getStatus(),
+                        job.getCreatedAt(),
+                        new RecruiterSummary(
+                                recruiter.getId(),
+                                recruiter.getEmail(),
+                                recruiter.getFullName()
+                        )
+                ))
+                .toList();
     }
 }
