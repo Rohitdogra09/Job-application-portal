@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class RecruiterJobService {
@@ -34,5 +36,16 @@ public class RecruiterJobService {
                 .build();
 
         return jobRepository.save(job);
+    }
+
+    // Get all the jobs created by logged in recruiter
+
+    public List<Job> getMyJobs(Jwt jwt){
+
+        String email = jwt.getSubject();
+
+        User recruiter = userRepository.findByEmail(email)
+                .orElseThrow(() -> new IllegalArgumentException("User not found" + email));
+        return jobRepository.findByCreatedBy_IdOrderByIdDesc(recruiter.getId());
     }
 }
